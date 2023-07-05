@@ -1,51 +1,111 @@
+// Header.tsx
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { signOut, useSession } from "next-auth/react";
 
 const Header = () => {
   const router = useRouter();
+  const { data: session, status } = useSession();
+
   const isActive: (pathname: string) => boolean = (pathname) =>
     router.pathname === pathname;
 
-  const left = (
+  let left = (
     <div className="left">
-      <Link href="/" className="bold" data-active={isActive("/")}>
+      <Link
+        href="/"
+        className={`inline-block font-bold no-underline ${
+          isActive("/") ? "text-gray-600" : "text-black"
+        }`}
+      >
         Feed
       </Link>
-      <style jsx>{`
-        .bold {
-          font-weight: bold;
-        }
-
-        a {
-          text-decoration: none;
-          color: #000;
-          display: inline-block;
-        }
-
-        .left a[data-active="true"] {
-          color: gray;
-        }
-
-        a + a {
-          margin-left: 1rem;
-        }
-      `}</style>
     </div>
   );
 
-  const right = null;
+  let right = null;
+
+  if (status === "loading") {
+    left = (
+      <div>
+        <Link
+          href="/"
+          className={`inline-block font-bold no-underline ${
+            isActive("/") ? "text-blue-600" : "text-black"
+          }`}
+        >
+          Feed
+        </Link>
+      </div>
+    );
+    right = (
+      <div className="ml-auto">
+        <p>Validating session ...</p>
+      </div>
+    );
+  }
+
+  if (!session) {
+    right = (
+      <div className="ml-auto">
+        <Link
+          href="/api/auth/signin"
+          className={`ml-4 inline-block rounded border border-solid border-black px-4 py-2 no-underline ${
+            isActive("/signup") ? "text-gray-600" : "text-black"
+          }}`}
+        >
+          Log in
+        </Link>
+      </div>
+    );
+  }
+
+  if (session) {
+    left = (
+      <div className="space-x-4">
+        <Link
+          href="/"
+          className={`inline-block font-bold no-underline ${
+            isActive("/") ? "text-gray-600" : "text-black"
+          }`}
+        >
+          Feed
+        </Link>
+        <Link
+          href="/drafts"
+          className={`inline-block font-bold no-underline ${
+            isActive("/drafts") ? "text-gray-600" : "text-black"
+          }`}
+        >
+          My drafts
+        </Link>
+      </div>
+    );
+    right = (
+      <div className="ml-auto">
+        <p className="inline-block pr-4 text-black">
+          {session.user.name} ({session.user.email})
+        </p>
+        <Link
+          href="/create"
+          className="inline-block rounded border border-solid border-black px-4 py-2 text-black no-underline"
+        >
+          <button>New post</button>
+        </Link>
+        <button
+          className="ml-4 inline-block rounded border border-solid border-black px-4 py-2"
+          onClick={() => signOut()}
+        >
+          Log out
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <nav>
+    <nav className="flex items-center p-8">
       {left}
       {right}
-      <style jsx>{`
-        nav {
-          display: flex;
-          padding: 2rem;
-          align-items: center;
-        }
-      `}</style>
     </nav>
   );
 };
