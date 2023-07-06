@@ -1,5 +1,5 @@
 {
-  "name": "nex",
+  "name": "nextjs-prisma-postgres-nextauth",
   "version": "0.1.0",
   "private": true,
   "scripts": {
