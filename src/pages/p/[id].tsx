@@ -14,7 +14,7 @@ export const getServerSideProps: GetServerSideProps = async ({ params }) => {
     },
     include: {
       author: {
-        select: { name: true, email: true },
+        select: { name: true, email: true, id: true },
       },
     },
   });
@@ -43,12 +43,15 @@ const Post = ({ post }: { post: PostProps }) => {
     return <div>Authenticating ...</div>;
   }
   const userHasValidSession = Boolean(session);
-  const postBelongsToUser = session?.user?.email === post.author?.email;
+  const postBelongsToUser = session?.user?.id === post.author?.id;
 
   let title = post.title;
   if (!post.published) {
     title = `${title} (Draft)`;
   }
+
+  console.log("id", session?.user?.id);
+  console.log("author", post.author?.id);
 
   return (
     <Layout>

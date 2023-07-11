@@ -5,6 +5,7 @@ export type PostProps = {
   id: string;
   title: string;
   author: {
+    id: string;
     name: string;
     email: string;
   } | null;
